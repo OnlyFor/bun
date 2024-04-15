@@ -6,21 +6,19 @@ on:
 jobs:
   windows-x64:
     name: Build windows-x64
-    uses: ./.github/workflows/build-zig.yml
+    uses: ./.github/workflows/build-windows.yml
     with:
       runs-on: windows-latest
       tag: windows-x64
-      os: windows
       arch: x64
       cpu: haswell
       deoptimize: true # ReleaseSafe
   windows-x64-baseline:
     name: Build windows-x64-baseline
-    uses: ./.github/workflows/build-zig.yml
+    uses: ./.github/workflows/build-windows.yml
     with:
       runs-on: windows-latest
       tag: windows-x64-baseline
-      os: windows
       arch: x64
       cpu: nehalem
       deoptimize: true # ReleaseSafe
