@@ -30,8 +30,8 @@ $BUN_DEPS_OUT_DIR = if ($env:BUN_DEPS_OUT_DIR) { $env:BUN_DEPS_OUT_DIR } else { 
 
 $CPUS = if ($env:CPUS) { $env:CPUS } else { (Get-WmiObject -Class Win32_Processor).NumberOfCores }
 
-$CC = "clang-cl"
-$CXX = "clang-cl"
+$CC = "ccache"
+$CXX = "ccache"
 
 $CFLAGS = '/O2'
 # $CFLAGS = '/O2 /MT'
