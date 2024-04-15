@@ -309,5 +309,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bun-${{ inputs.tag }}-pdb
-          path: bun-${{ inputs.tag }}-pdb
+          path: bun-${{ inputs.tag }}.pdb
           if-no-files-found: error
