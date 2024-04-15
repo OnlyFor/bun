@@ -8,7 +8,7 @@ jobs:
     name: Build windows-x64
     uses: ./.github/workflows/build-zig.yml
     with:
-      runs-on: ${{ github.repository_owner == 'oven-sh' && 'namespace-profile-bun-ci-windows-x64' || 'windows-latest' }}
+      runs-on: windows-latest
       tag: windows-x64
       os: windows
       arch: x64
@@ -18,7 +18,7 @@ jobs:
     name: Build windows-x64-baseline
     uses: ./.github/workflows/build-zig.yml
     with:
-      runs-on: ${{ github.repository_owner == 'oven-sh' && 'namespace-profile-bun-ci-windows-x64' || 'windows-latest' }}
+      runs-on: windows-latest
       tag: windows-x64-baseline
       os: windows
       arch: x64
