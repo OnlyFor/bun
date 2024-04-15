@@ -141,6 +141,8 @@ jobs:
           git config --global core.eol lf
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Install LLVM
         uses: KyleMayes/install-llvm-action@1a3da29f56261a1e1f937ec88f0856a9b8321d7e
         with:
@@ -175,12 +177,11 @@ jobs:
           .\scripts\update-submodules.ps1
           .\scripts\build-libuv.ps1 -CloneOnly $True
           cd build
-          # "-DCCACHE_PROGRAM=${SCCACHE}"
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release `
             -DNO_CODEGEN=1 `
             -DNO_CONFIGURE_DEPENDS=1 `
             "-DCANARY=${CANARY_REVISION}" `
-            -DBUN_CPP_ONLY=1 ${{ contains(inputs.tag, '-baseline') && '-Baseline' || '' }}
+            -DBUN_CPP_ONLY=1 ${{ contains(inputs.tag, '-baseline') && '-DUSE_BASELINE_BUILD=1' || '' }}
           if ($LASTEXITCODE -ne 0) { throw "CMake configuration failed" }
           .\compile-cpp-only.ps1 -v
           if ($LASTEXITCODE -ne 0) { throw "C++ compilation failed" }
