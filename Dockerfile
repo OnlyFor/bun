@@ -435,6 +435,9 @@ ARG CANARY=0
 ARG ASSERTIONS=OFF
 ARG ZIG_OPTIMIZE=ReleaseFast
 
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
+
 COPY *.zig package.json CMakeLists.txt ${BUN_DIR}/
 COPY completions ${BUN_DIR}/completions
 COPY packages ${BUN_DIR}/packages
