@@ -75,13 +75,16 @@ jobs:
       - if: ${{ inputs.no-cache || !steps.cache.outputs.cache-hit }}
         name: Install Ninja
         run: |
-          choco install -y ninja
+          choco install -y ninja ccache
       - if: ${{ inputs.no-cache || !steps.cache.outputs.cache-hit }}
         name: Clone Submodules
         run: |
           .\scripts\update-submodules.ps1
       - if: ${{ inputs.no-cache || !steps.cache.outputs.cache-hit }}
         name: Build Dependencies
+        env:
+          CPU_TARGET: ${{ inputs.cpu }}
+          CCACHE_DIR: ccache
         run: |
           .\scripts\env.ps1 ${{ contains(inputs.tag, '-baseline') && '-Baseline' || '' }}
           Invoke-WebRequest -Uri "https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/win64/nasm-2.16.01-win64.zip" -OutFile nasm.zip
@@ -149,7 +152,7 @@ jobs:
           version: ${{ env.LLVM_VERSION }}
       - name: Install Ninja
         run: |
-          choco install -y ninja
+          choco install -y ninja ccache
       - name: Setup Bun
         uses: ./.github/actions/setup-bun
         with:
@@ -169,6 +172,7 @@ jobs:
           path: build
       - name: Compile
         env:
+          CPU_TARGET: ${{ inputs.cpu }}
           CCACHE_DIR: ccache
         run: |
           # $CANARY_REVISION = if (Test-Path build/.canary_revision) { Get-Content build/.canary_revision } else { "0" }
@@ -228,7 +232,7 @@ jobs:
           version: ${{ env.LLVM_VERSION }}
       - name: Install Ninja
         run: |
-          choco install -y ninja
+          choco install -y ninja ccache
       - name: Setup Bun
         uses: ./.github/actions/setup-bun
         with:

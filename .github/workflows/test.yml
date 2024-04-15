@@ -68,11 +68,16 @@ jobs:
           which bun
           bun --version
       - if: ${{ runner.os == 'Windows' }}
+        name: Setup Cygwin
+        uses: secondlife/setup-cygwin@v3
+        with:
+          packages: bash
+      - if: ${{ runner.os == 'Windows' }}
         name: Setup Bun (Windows)
         shell: bash
         run: |
-          unzip ${{ runner.temp }}/bun/bun-*.zip
-          cd ${{ runner.temp }}/bun-*
+          unzip ${{ runner.temp }}\bun\bun-*.zip
+          cd ${{ runner.temp }}\bun-*
           pwd >> $env:GITHUB_PATH
       - name: Setup Node.js
         uses: actions/setup-node@v4
