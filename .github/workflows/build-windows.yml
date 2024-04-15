@@ -162,6 +162,11 @@ jobs:
           key: bun-${{ inputs.tag }}-cpp-${{ github.ref_name }}
           restore-keys: |
             bun-${{ inputs.tag }}-cpp-
+      - name: Download bun-${{ inputs.tag }}-codegen
+        uses: actions/download-artifact@v4
+        with:
+          name: bun-${{ inputs.tag }}-codegen
+          path: build
       - name: Compile
         env:
           CCACHE_DIR: ccache
