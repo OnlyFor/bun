@@ -273,20 +273,20 @@ jobs:
         run: |
           cd ${{ runner.temp }}/link-build
           chmod +x bun-profile bun
-          mkdir -p ${{ inputs.tag }}-profile/ ${{ inputs.tag }}/
-          mv bun-profile ${{ inputs.tag }}-profile/bun-profile
-          mv bun ${{ inputs.tag }}/bun
-          zip -r ${{ inputs.tag }}-profile.zip ${{ inputs.tag }}-profile
-          zip -r ${{ inputs.tag }}.zip ${{ inputs.tag }}
+          mkdir -p bun-${{ inputs.tag }}-profile/ bun-${{ inputs.tag }}/
+          mv bun-profile bun-${{ inputs.tag }}-profile/bun-profile
+          mv bun bun-${{ inputs.tag }}/bun
+          zip -r bun-${{ inputs.tag }}-profile.zip bun-${{ inputs.tag }}-profile
+          zip -r bun-${{ inputs.tag }}.zip bun-${{ inputs.tag }}
       - name: Upload bun-${{ inputs.tag }}
         uses: actions/upload-artifact@v4
         with:
           name: bun-${{ inputs.tag }}
-          path: ${{ runner.temp }}/link-build/${{ inputs.tag }}.zip
+          path: ${{ runner.temp }}/link-build/bun-${{ inputs.tag }}.zip
           if-no-files-found: error
       - name: Upload bun-${{ inputs.tag }}-profile
         uses: actions/upload-artifact@v4
         with:
           name: bun-${{ inputs.tag }}-profile
-          path: ${{ runner.temp }}/link-build/${{ inputs.tag }}-profile.zip
+          path: ${{ runner.temp }}/link-build/bun-${{ inputs.tag }}-profile.zip
           if-no-files-found: error
