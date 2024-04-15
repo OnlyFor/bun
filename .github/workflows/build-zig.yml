@@ -44,7 +44,7 @@ jobs:
         with:
           install: true
           platforms: |
-            linux/${{ inputs.arch == 'x64' && 'amd64' || 'arm64' }}
+            linux/${{ runner.arch == 'X64' && 'amd64' || 'arm64' }}
       - if: ${{ !inputs.no-cache }}
         name: Restore Zig Cache
         uses: actions/cache@v4
@@ -82,7 +82,7 @@ jobs:
           cache-to: |
             type=local,dest=${{ runner.temp }}/dockercache,mode=max
           platforms: |
-            linux/${{ inputs.arch == 'x64' && 'amd64' || 'arm64' }}
+            linux/${{ runner.arch == 'X64' && 'amd64' || 'arm64' }}
           build-args: |
             GIT_SHA=${{ github.sha }}
             TRIPLET=${{ inputs.os == 'darwin' && format('{0}-macos-none', inputs.arch == 'x64' && 'x86_64' || 'aarch64') || inputs.os == 'windows' && format('{0}-windows-msvc', inputs.arch == 'x64' && 'x86_64' || 'aarch64') || format('{0}-linux-gnu', inputs.arch == 'x64' && 'x86_64' || 'aarch64') }}
