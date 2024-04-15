@@ -305,9 +305,3 @@ jobs:
           name: bun-${{ inputs.tag }}-profile
           path: bun-${{ inputs.tag }}-profile.zip
           if-no-files-found: error
-      - name: Upload bun-${{ inputs.tag }}-pdb
-        uses: actions/upload-artifact@v4
-        with:
-          name: bun-${{ inputs.tag }}-pdb
-          path: bun-${{ inputs.tag }}.pdb
-          if-no-files-found: error
