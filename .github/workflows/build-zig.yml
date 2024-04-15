@@ -53,7 +53,7 @@ jobs:
           restore-keys: |
             bun-${{ inputs.tag }}-zig-
           path: |
-            /zig-cache
+            ${{ runner.temp }}/zig-cache
       - if: ${{ !inputs.no-cache }}
         name: Restore C++ Cache
         uses: actions/cache@v4
@@ -62,7 +62,7 @@ jobs:
           restore-keys: |
             bun-${{ inputs.tag }}-cpp-
           path: |
-            /ccache
+            ${{ runner.temp }}/ccache
       - if: ${{ !inputs.no-cache }}
         name: Restore Docker Cache
         uses: actions/cache@v4
@@ -93,6 +93,8 @@ jobs:
             ASSERTIONS=${{ inputs.assertions && 'ON' || 'OFF' }}
             ZIG_OPTIMIZE=${{ inputs.deoptimize && 'ReleaseSafe' || 'ReleaseFast' }}
             CANARY=${{ inputs.canary && '1' || '0' }}
+            CCACHE_DIR=${{ runner.temp }}/ccache
+            ZIG_LOCAL_CACHE_DIR=${{ runner.temp }}/zig-cache
           outputs: |
             type=local,dest=${{ runner.temp }}/release
       - if: ${{ inputs.only-zig }}

@@ -59,13 +59,21 @@ jobs:
           workflow_conclusion: "" # ignore conclusion
           check_artifacts: true
           search_artifacts: true
-      - name: Setup Bun
+      - if: ${{ runner.os != 'Windows' }}
+        name: Setup Bun
         shell: bash
         run: |
           unzip -d /usr/local/bin ${{ runner.temp }}/bun/bun-*.zip
           mv /usr/local/bin/bun-*/bun /usr/local/bin/bun
           which bun
           bun --version
+      - if: ${{ runner.os == 'Windows' }}
+        name: Setup Bun (Windows)
+        shell: bash
+        run: |
+          unzip ${{ runner.temp }}/bun/bun-*.zip
+          cd ${{ runner.temp }}/bun-*
+          pwd >> $env:GITHUB_PATH
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

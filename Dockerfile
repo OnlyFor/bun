@@ -138,7 +138,8 @@ ARG BUILD_MACHINE_ARCH
 ARG ZIG_FOLDERNAME=zig-linux-${BUILD_MACHINE_ARCH}-${ZIG_VERSION}
 ARG ZIG_FILENAME=${ZIG_FOLDERNAME}.tar.xz
 ARG ZIG_URL="https://ziglang.org/builds/${ZIG_FILENAME}"
-ENV ZIG_LOCAL_CACHE_DIR=/zig-cache
+ARG ZIG_LOCAL_CACHE_DIR=/zig-cache
+ENV ZIG_LOCAL_CACHE_DIR=${ZIG_LOCAL_CACHE_DIR}
 
 WORKDIR $GITHUB_WORKSPACE
 
@@ -153,7 +154,8 @@ FROM bun-base as c-ares
 ARG BUN_DIR
 ARG CPU_TARGET
 ENV CPU_TARGET=${CPU_TARGET}
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 COPY Makefile ${BUN_DIR}/Makefile
 COPY src/deps/c-ares ${BUN_DIR}/src/deps/c-ares
@@ -176,7 +178,8 @@ ENV CPU_TARGET=${CPU_TARGET}
 COPY Makefile ${BUN_DIR}/Makefile
 COPY src/deps/lol-html ${BUN_DIR}/src/deps/lol-html
 
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 RUN --mount=type=cache,target=/ccache \
   export PATH=$PATH:$HOME/.cargo/bin \
@@ -194,7 +197,8 @@ ENV CPU_TARGET=${CPU_TARGET}
 COPY Makefile ${BUN_DIR}/Makefile
 COPY src/deps/mimalloc ${BUN_DIR}/src/deps/mimalloc
 
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 RUN --mount=type=cache,target=/ccache \
   cd ${BUN_DIR} \
@@ -211,7 +215,8 @@ ENV CPU_TARGET=${CPU_TARGET}
 COPY Makefile ${BUN_DIR}/Makefile
 COPY src/deps/mimalloc ${BUN_DIR}/src/deps/mimalloc
 
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 RUN --mount=type=cache,target=/ccache \
   cd ${BUN_DIR} \
@@ -223,7 +228,8 @@ FROM bun-base as zlib
 ARG BUN_DIR
 ARG CPU_TARGET
 ENV CPU_TARGET=${CPU_TARGET}
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 COPY Makefile ${BUN_DIR}/Makefile
 COPY src/deps/zlib ${BUN_DIR}/src/deps/zlib
@@ -240,7 +246,8 @@ FROM bun-base as libarchive
 ARG BUN_DIR
 ARG CPU_TARGET
 ENV CPU_TARGET=${CPU_TARGET}
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 RUN install_packages autoconf automake libtool pkg-config 
 
@@ -276,7 +283,8 @@ COPY src/deps/boringssl ${BUN_DIR}/src/deps/boringssl
 
 WORKDIR $BUN_DIR
 
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 RUN --mount=type=cache,target=/ccache \
   cd ${BUN_DIR} \
@@ -304,7 +312,8 @@ ARG BUN_DIR
 ARG CPU_TARGET
 ENV CPU_TARGET=${CPU_TARGET}
 
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 COPY Makefile ${BUN_DIR}/Makefile
 COPY src/deps/zstd ${BUN_DIR}/src/deps/zstd
@@ -322,7 +331,8 @@ ARG BUN_DIR
 ARG CPU_TARGET
 ENV CPU_TARGET=${CPU_TARGET}
 
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 COPY Makefile ${BUN_DIR}/Makefile
 COPY src/deps/ls-hpack ${BUN_DIR}/src/deps/ls-hpack
@@ -389,7 +399,8 @@ COPY src ${BUN_DIR}/src
 COPY CMakeLists.txt ${BUN_DIR}/CMakeLists.txt
 COPY src/deps/boringssl/include ${BUN_DIR}/src/deps/boringssl/include
 
-ENV CCACHE_DIR=/ccache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
 
 RUN --mount=type=cache,target=/ccache mkdir ${BUN_DIR}/build \
   && cd ${BUN_DIR}/build \
@@ -471,8 +482,10 @@ ARG CANARY
 ARG ASSERTIONS
 
 ENV CPU_TARGET=${CPU_TARGET}
-ENV CCACHE_DIR=/ccache
-ENV ZIG_LOCAL_CACHE_DIR=/zig-cache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
+ARG ZIG_LOCAL_CACHE_DIR=/zig-cache
+ENV ZIG_LOCAL_CACHE_DIR=${ZIG_LOCAL_CACHE_DIR}
 
 WORKDIR $BUN_DIR
 
@@ -533,8 +546,10 @@ ARG CANARY
 ARG ASSERTIONS
 
 ENV CPU_TARGET=${CPU_TARGET}
-ENV CCACHE_DIR=/ccache
-ENV ZIG_LOCAL_CACHE_DIR=/zig-cache
+ARG CCACHE_DIR=/ccache
+ENV CCACHE_DIR=${CCACHE_DIR}
+ARG ZIG_LOCAL_CACHE_DIR=/zig-cache
+ENV ZIG_LOCAL_CACHE_DIR=${ZIG_LOCAL_CACHE_DIR}
 
 WORKDIR $BUN_DIR
 
