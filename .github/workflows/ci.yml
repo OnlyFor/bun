@@ -4,6 +4,14 @@ on:
   pull_request:
 
 jobs:
+  format:
+    name: Format
+    uses: ./.github/workflows/run-format.yml
+    with:
+      zig-version: 0.12.0-dev.1828+225fe6ddb
+  lint:
+    name: Lint
+    uses: ./.github/workflows/run-lint.yml
   windows-x64:
     name: Build windows-x64
     uses: ./.github/workflows/build-windows.yml
@@ -82,7 +90,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     name: Test linux-x64
     needs: linux-x64
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/run-test.yml
     with:
       pr-number: ${{ github.event.number }}
       runs-on: ${{ github.repository_owner == 'oven-sh' && 'namespace-profile-bun-ci-linux-x64' || 'ubuntu-latest' }}
@@ -91,7 +99,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     name: Test linux-x64-baseline
     needs: linux-x64-baseline
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/run-test.yml
     with:
       pr-number: ${{ github.event.number }}
       runs-on: ${{ github.repository_owner == 'oven-sh' && 'namespace-profile-bun-ci-linux-x64' || 'ubuntu-latest' }}
@@ -100,7 +108,7 @@ jobs:
     if: ${{ github.repository_owner == 'oven-sh' && github.event_name == 'pull_request' }}
     name: Test linux-aarch64
     needs: linux-aarch64
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/run-test.yml
     with:
       pr-number: ${{ github.event.number }}
       runs-on: namespace-profile-bun-ci-linux-aarch64
@@ -109,7 +117,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     name: Test darwin-x64
     needs: darwin-x64
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/run-test.yml
     with:
       pr-number: ${{ github.event.number }}
       runs-on: ${{ github.repository_owner == 'oven-sh' && 'macos-12-large' || 'macos-12' }}
@@ -118,7 +126,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     name: Test darwin-x64-baseline
     needs: darwin-x64-baseline
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/run-test.yml
     with:
       pr-number: ${{ github.event.number }}
       runs-on: ${{ github.repository_owner == 'oven-sh' && 'macos-12-large' || 'macos-12' }}
@@ -127,7 +135,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     name: Test darwin-aarch64
     needs: darwin-aarch64
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/run-test.yml
     with:
       pr-number: ${{ github.event.number }}
       runs-on: ${{ github.repository_owner == 'oven-sh' && 'namespace-profile-bun-ci-darwin-aarch64' || 'macos-14' }}
@@ -136,7 +144,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     name: Test windows-x64
     needs: windows-x64
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/run-test.yml
     with:
       pr-number: ${{ github.event.number }}
       runs-on: windows-latest
@@ -145,13 +153,14 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     name: Test windows-x64-baseline
     needs: windows-x64-baseline
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/run-test.yml
     with:
       pr-number: ${{ github.event.number }}
       runs-on: windows-latest
       tag: windows-x64-baseline
   summary:
-    name: Summary
+    if: ${{ always() }}
+    name: Summarize
     runs-on: ubuntu-latest
     needs:
       - linux-x64-test
@@ -163,7 +172,7 @@ jobs:
       - windows-x64-test
       - windows-x64-baseline-test
     steps:
-      - name: Clean Artifacts
+      - name: Cleanup
         uses: geekyeggo/delete-artifact@v5
         with:
           name: |
