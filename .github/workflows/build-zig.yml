@@ -39,39 +39,27 @@ jobs:
     name: ${{ inputs.only-zig && 'Build Zig' || 'Build & Link' }}
     runs-on: ${{ inputs.runs-on }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Calculate Cache Key
+        id: cache
+        run: |
+          echo "key=${{ hashFiles('Dockerfile', 'Makefile', 'CMakeLists.txt', 'build.zig', 'scripts/**', 'src/**', 'packages/bun-usockets/src/**', 'packages/bun-uws/src/**') }}" >> $GITHUB_OUTPUT
+      - if: ${{ !inputs.no-cache }}
+        name: Restore Cache
+        uses: actions/cache@v4
+        with:
+          key: bun-${{ inputs.tag }}-docker-${{ steps.cache.outputs.key }}
+          restore-keys: |
+            bun-${{ inputs.tag }}-docker-
+          path: |
+            ${{ runner.temp }}/dockercache
       - name: Setup Docker
         uses: docker/setup-buildx-action@v3
         with:
           install: true
           platforms: |
             linux/${{ runner.arch == 'X64' && 'amd64' || 'arm64' }}
-      - if: ${{ !inputs.no-cache }}
-        name: Restore Zig Cache
-        uses: actions/cache@v4
-        with:
-          key: bun-${{ inputs.tag }}-zig-${{ github.ref_name }}
-          restore-keys: |
-            bun-${{ inputs.tag }}-zig-
-          path: |
-            ${{ runner.temp }}/zig-cache
-      - if: ${{ !inputs.no-cache }}
-        name: Restore C++ Cache
-        uses: actions/cache@v4
-        with:
-          key: bun-${{ inputs.tag }}-cpp-${{ github.ref_name }}
-          restore-keys: |
-            bun-${{ inputs.tag }}-cpp-
-          path: |
-            ${{ runner.temp }}/ccache
-      - if: ${{ !inputs.no-cache }}
-        name: Restore Docker Cache
-        uses: actions/cache@v4
-        with:
-          key: bun-${{ inputs.tag }}-docker-${{ github.ref_name }}
-          restore-keys: |
-            bun-${{ inputs.tag }}-docker-
-          path: |
-            ${{ runner.temp }}/dockercache
       - name: Build
         uses: docker/build-push-action@v5
         with:
@@ -81,6 +69,8 @@ jobs:
             type=local,src=${{ runner.temp }}/dockercache
           cache-to: |
             type=local,dest=${{ runner.temp }}/dockercache,mode=max
+          outputs: |
+            type=local,dest=${{ runner.temp }}/release
           platforms: |
             linux/${{ runner.arch == 'X64' && 'amd64' || 'arm64' }}
           build-args: |
@@ -93,10 +83,6 @@ jobs:
             ASSERTIONS=${{ inputs.assertions && 'ON' || 'OFF' }}
             ZIG_OPTIMIZE=${{ inputs.deoptimize && 'ReleaseSafe' || 'ReleaseFast' }}
             CANARY=${{ inputs.canary && '1' || '0' }}
-            CCACHE_DIR=${{ runner.temp }}/ccache
-            ZIG_LOCAL_CACHE_DIR=${{ runner.temp }}/zig-cache
-          outputs: |
-            type=local,dest=${{ runner.temp }}/release
       - if: ${{ inputs.only-zig }}
         name: Upload bun-${{ inputs.tag }}-zig
         uses: actions/upload-artifact@v4

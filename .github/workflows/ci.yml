@@ -130,7 +130,7 @@ jobs:
     uses: ./.github/workflows/test.yml
     with:
       pr-number: ${{ github.event.number }}
-      runs-on: ${{ github.repository_owner == 'oven-sh' && 'namespace-profile-bun-ci-linux-aarch64' || 'macos-14' }}
+      runs-on: ${{ github.repository_owner == 'oven-sh' && 'namespace-profile-bun-ci-darwin-aarch64' || 'macos-14' }}
       tag: darwin-aarch64
   windows-x64-test:
     if: ${{ github.event_name == 'pull_request' }}
@@ -150,3 +150,24 @@ jobs:
       pr-number: ${{ github.event.number }}
       runs-on: windows-latest
       tag: windows-x64-baseline
+  summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    needs:
+      - linux-x64-test
+      - linux-x64-baseline-test
+      - linux-aarch64-test
+      - darwin-x64-test
+      - darwin-x64-baseline-test
+      - darwin-aarch64-test
+      - windows-x64-test
+      - windows-x64-baseline-test
+    steps:
+      - name: Clean Artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: |
+            bun-*-cpp
+            bun-*-zig
+            bun-*-deps
+            bun-*-codegen

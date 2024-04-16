@@ -75,7 +75,7 @@ jobs:
       - if: ${{ inputs.no-cache || !steps.cache.outputs.cache-hit }}
         name: Install Ninja
         run: |
-          choco install -y ninja ccache
+          choco install -y ninja
       - if: ${{ inputs.no-cache || !steps.cache.outputs.cache-hit }}
         name: Clone Submodules
         run: |
@@ -152,7 +152,7 @@ jobs:
           version: ${{ env.LLVM_VERSION }}
       - name: Install Ninja
         run: |
-          choco install -y ninja ccache
+          choco install -y ninja
       - name: Setup Bun
         uses: ./.github/actions/setup-bun
         with:
@@ -232,7 +232,7 @@ jobs:
           version: ${{ env.LLVM_VERSION }}
       - name: Install Ninja
         run: |
-          choco install -y ninja ccache
+          choco install -y ninja
       - name: Setup Bun
         uses: ./.github/actions/setup-bun
         with:

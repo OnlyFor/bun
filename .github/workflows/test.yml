@@ -76,8 +76,11 @@ jobs:
         name: Setup Bun (Windows)
         shell: bash
         run: |
-          unzip ${{ runner.temp }}\bun\bun-*.zip
-          cd ${{ runner.temp }}\bun-*
+          cd ${{ runner.temp }}
+          cd bun
+          unzip bun-*.zip
+          cd ${{ runner.temp }}
+          cd bun-*
           pwd >> $env:GITHUB_PATH
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -103,7 +106,7 @@ jobs:
       - name: Upload Results
         uses: actions/upload-artifact@v4
         with:
-          name: results
+          name: ${{ inputs.tag }}-results
           path: |
             test-report.*
             pr-number.txt
