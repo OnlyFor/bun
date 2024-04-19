@@ -160,6 +160,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Checkout Tests
+        shell: bash
+        working-directory: test/node
+        run: |
+          node runner.mjs --pull
       - name: Install Dependencies
         timeout-minutes: 5
         shell: bash
@@ -179,6 +184,6 @@ jobs:
         with:
           name: bun-${{ inputs.tag }}-node-tests
           path: |
-            summary/*.json
+            test/node/summary/*.json
           if-no-files-found: error
           overwrite: true

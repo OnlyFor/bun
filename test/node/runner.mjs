@@ -50,7 +50,12 @@ async function main() {
     return;
   }
 
-  pullTests(values.pull);
+  if (values.pull) {
+    pullTests(true);
+    return;
+  }
+
+  pullTests();
   const summary = await runTests(values);
   const regressedTests = appendSummary(summary);
   printSummary(summary, regressedTests);
