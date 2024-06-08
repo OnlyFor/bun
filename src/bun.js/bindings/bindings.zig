@@ -1552,8 +1552,8 @@ pub const FetchHeaders = opaque {
 
     pub fn copyTo(
         this: *FetchHeaders,
-        names: [*c]Api.StringPointer,
-        values: [*c]Api.StringPointer,
+        names: ?[*]Api.StringPointer,
+        values: ?[*]Api.StringPointer,
         buf: [*]u8,
     ) void {
         return shim.cppFn("copyTo", .{
@@ -4324,10 +4324,8 @@ pub const JSValue = enum(JSValueReprInt) {
         });
     }
 
-    pub fn hasOwnPropertyValue(this: JSValue, globalThis: *JSGlobalObject, value: JSC.JSValue) bool {
-        // TODO: add a binding for this
-        return hasOwnProperty(this, globalThis, value.getZigString(globalThis));
-    }
+    extern "C" fn JSC__JSValue__hasOwnPropertyValue(JSValue, *JSGlobalObject, JSValue) bool;
+    pub const hasOwnPropertyValue = JSC__JSValue__hasOwnPropertyValue;
 
     pub fn hasOwnProperty(this: JSValue, globalThis: *JSGlobalObject, key: ZigString) bool {
         return cppFn("hasOwnProperty", .{ this, globalThis, key });
