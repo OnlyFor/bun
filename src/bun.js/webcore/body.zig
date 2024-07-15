@@ -861,8 +861,18 @@ pub const Body = struct {
             error_instance.ensureStillAlive();
             if (this.* == .Locked) {
                 var locked = this.Locked;
+                 // will be unprotected by body value deinit
+                error_instance.protect();
+                this.* = .{ .Error = error_instance };
+
+                var strong_readable = locked.readable;
+                locked.readable = .{};
+                defer strong_readable.deinit();
+                
+
                 if (locked.hasPendingPromise()) {
                     const promise = locked.promise.?;
+                    defer promise.unprotect();
                     locked.promise = null;
 
                     if (promise.asAnyPromise()) |internal| {
@@ -870,15 +880,11 @@ pub const Body = struct {
                     }
                     promise.unprotect();
                 }
-                var readable_stream = locked.readable;
-                locked.readable = .{};
-                defer readable_stream.deinit();
-                if (readable_stream.get()) |readable| {
+                
+                if (strong_readable.get()) |readable| {
                     readable.abort(global);
                 }
-                // will be unprotected by body value deinit
-                error_instance.protect();
-                this.* = .{ .Error = error_instance };
+               
                 if (locked.onReceiveValue) |onReceiveValue| {
                     locked.onReceiveValue = null;
                     onReceiveValue(locked.task.?, this);
