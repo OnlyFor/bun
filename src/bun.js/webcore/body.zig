@@ -861,7 +861,6 @@ pub const Body = struct {
             error_instance.ensureStillAlive();
             if (this.* == .Locked) {
                 var locked = this.Locked;
-                locked.deinit = true;
                 if (locked.hasPendingPromise()) {
                     const promise = locked.promise.?;
                     locked.promise = null;
@@ -871,10 +870,11 @@ pub const Body = struct {
                     }
                     promise.unprotect();
                 }
-
-                if (locked.readable.get()) |readable| {
+                var readable_stream = locked.readable;
+                locked.readable = .{};
+                defer readable_stream.deinit();
+                if (readable_stream.get()) |readable| {
                     readable.abort(global);
-                    locked.readable.deinit();
                 }
                 // will be unprotected by body value deinit
                 error_instance.protect();
