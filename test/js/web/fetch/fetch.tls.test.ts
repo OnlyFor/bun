@@ -258,17 +258,16 @@ it("fetch timeout works on tls", async () => {
     expect(total).toBeLessThanOrEqual(TIMEOUT + THRESHOLD);
   }
 });
-
-it("fetch should abort as soon as possible under tls", async () => {
-  using server = Bun.serve({
-    port: 0,
-    tls: CERT_LOCALHOST_IP,
-    async fetch() {
-      await Bun.sleep(1000);
-      return new Response("Hello World");
-    },
-  });
-  for (const timeout of [0, 1, 10, 20, 100, 300]) {
+for (const timeout of [0, 1, 10, 20, 100, 300]) {
+  it(`fetch should abort as soon as possible under tls using AbortSignal.timeout(${timeout})`, async () => {
+    using server = Bun.serve({
+      port: 0,
+      tls: CERT_LOCALHOST_IP,
+      async fetch() {
+        await Bun.sleep(1000);
+        return new Response("Hello World");
+      },
+    });
     const time = Date.now();
     try {
       await fetch(server.url, {
@@ -283,8 +282,8 @@ it("fetch should abort as soon as possible under tls", async () => {
       expect(diff).toBeLessThanOrEqual(timeout + 10);
       expect(diff).toBeGreaterThanOrEqual(timeout);
     }
-  }
-});
+  });
+}
 
 it("fetch should use NODE_EXTRA_CA_CERTS", async () => {
   using server = Bun.serve({
