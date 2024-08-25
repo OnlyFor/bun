@@ -2427,11 +2427,8 @@ fn NewRequestContext(comptime ssl_enabled: bool, comptime debug_mode: bool, comp
             }
 
             if (this.blob.needsToReadFile()) {
-                if(this.req) |req| {
-                    req.setYield(false);
-                    if (!this.flags.has_sendfile_ctx)
-                        this.doSendfile(this.blob.Blob);
-                }
+                if (!this.flags.has_sendfile_ctx)
+                    this.doSendfile(this.blob.Blob);
                 return;
             }
 
@@ -6378,7 +6375,6 @@ pub fn NewServer(comptime NamespaceType: type, comptime ssl_enabled_: bool, comp
                 .signal = signal.ref(),
                 .body = body.ref(),
             });
-
 
             if (comptime debug_mode) {
                 ctx.flags.is_web_browser_navigation = brk: {
