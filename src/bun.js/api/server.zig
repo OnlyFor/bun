@@ -1461,7 +1461,7 @@ fn NewRequestContext(comptime ssl_enabled: bool, comptime debug_mode: bool, comp
         /// this prevents an extra pthread_getspecific() call which shows up in profiling
         allocator: std.mem.Allocator,
         req: ?*uws.Request,
-        request_ref: JSC.Strong = .{},
+        request_weakref: Request.WeakRef = .{},
         signal: ?*JSC.WebCore.AbortSignal = null,
         method: HTTP.Method,
 
@@ -2017,11 +2017,9 @@ fn NewRequestContext(comptime ssl_enabled: bool, comptime debug_mode: bool, comp
                 this.response_jsvalue = JSC.JSValue.zero;
             }
 
-            if(this.request_ref.get()) |js_request| {
-                if(js_request.as(Request)) |request|{
-                    request.request_context = AnyRequestContext.Null;
-                    this.request_ref.deinit();
-                }
+            if(this.request_weakref.get()) |request| {
+                request.request_context = AnyRequestContext.Null;
+                this.request_weakref.deinit();
             }
 
             // if signal is not aborted, abort the signal
@@ -5609,7 +5607,7 @@ pub fn NewServer(comptime NamespaceType: type, comptime ssl_enabled_: bool, comp
             // after upgrading we should not use the response anymore
             upgrader.resp = null;
             request.request_context = AnyRequestContext.Null;
-            upgrader.request_ref.deinit();
+            upgrader.request_weakref.deinit();
 
             data_value.ensureStillAlive();
             const ws = ServerWebSocket.new(.{
@@ -6376,6 +6374,8 @@ pub fn NewServer(comptime NamespaceType: type, comptime ssl_enabled_: bool, comp
                 .signal = signal.ref(),
                 .body = body.ref(),
             });
+            ctx.request_weakref = Request.WeakRef.create(request_object);
+
 
             if (comptime debug_mode) {
                 ctx.flags.is_web_browser_navigation = brk: {
@@ -6429,7 +6429,6 @@ pub fn NewServer(comptime NamespaceType: type, comptime ssl_enabled_: bool, comp
             }
             const js_request = request_object.toJS(this.globalThis);
             js_request.ensureStillAlive();
-            ctx.request_ref = JSC.Strong.create(js_request, this.globalThis);
 
             // We keep the Request object alive for the duration of the request so that we can remove the pointer to the UWS request object.
             var args = [_]JSC.JSValue{
@@ -6496,7 +6495,7 @@ pub fn NewServer(comptime NamespaceType: type, comptime ssl_enabled_: bool, comp
                 .body = body.ref(),
             });
             ctx.upgrade_context = upgrade_ctx;
-
+            ctx.request_weakref = Request.WeakRef.create(request_object);
             // We keep the Request object alive for the duration of the request so that we can remove the pointer to the UWS request object.
             var args = [_]JSC.JSValue{
                 request_object.toJS(this.globalThis),
@@ -6504,7 +6503,6 @@ pub fn NewServer(comptime NamespaceType: type, comptime ssl_enabled_: bool, comp
             };
             const request_value = args[0];
             request_value.ensureStillAlive();
-            ctx.request_ref = JSC.Strong.create(request_value, this.globalThis);
             const response_value = this.config.onRequest.call(this.globalThis, this.thisObject, &args);
             defer {
                 // uWS request will not live longer than this function
