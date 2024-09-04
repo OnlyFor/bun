@@ -61,7 +61,6 @@ public:
     void call(JSC::JSGlobalObject* globalObject, void* data);
 };
 
-
 // This is essentially JSC::JSWeakValue, except with a JSCell* instead of a
 // JSObject*. Sometimes, a napi embedder might want to store a JSC::Exception, a
 // JSC::HeapBigInt, JSC::Symbol, etc inside of a NapiRef. So we can't limit it
