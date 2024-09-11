@@ -3531,6 +3531,7 @@ pub const WindowsNamedPipeListeningContext = if (Environment.isWindows) struct {
         };
 
         const client = WindowsNamedPipeContext.create(this.globalThis, socket);
+
         const result = client.named_pipe.getAcceptedBy(&this.uvPipe, this.ctx);
         if (result == .err) {
             // connection dropped
